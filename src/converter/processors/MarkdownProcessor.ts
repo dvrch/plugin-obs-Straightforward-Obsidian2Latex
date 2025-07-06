@@ -178,7 +178,13 @@ export class MarkdownProcessor {
 	 */
 	private processSpecialSymbols(lines: string[]): string[] {
 		return lines.map(line => {
-			// Échapper les caractères spéciaux LaTeX
+			// Échapper les caractères spéciaux LaTeX UNIQUEMENT dans le texte utilisateur
+			// Ne pas toucher aux commandes LaTeX générées (\section, \item, etc.)
+			// On considère qu'une ligne qui commence par un backslash est une commande LaTeX
+			if (line.trim().startsWith('\\')) {
+				return line;
+			}
+			// Sinon, on échappe les caractères spéciaux
 			line = line.replace(/%/g, '\\%');
 			line = line.replace(/#/g, '\\#');
 			line = line.replace(/\$/g, '\\$');
@@ -186,11 +192,9 @@ export class MarkdownProcessor {
 			line = line.replace(/\}/g, '\\}');
 			line = line.replace(/\^/g, '\\^{}');
 			line = line.replace(/\~/g, '\\~{}');
-			line = line.replace(/\\/g, '\\textbackslash{}');
-			
+			// NE PAS échapper le backslash globalement !
 			// Symboles de tableau
 			line = line.replace(/&/g, '\\&');
-
 			return line;
 		});
 	}

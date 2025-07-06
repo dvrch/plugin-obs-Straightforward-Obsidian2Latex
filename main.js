@@ -9,38 +9,32 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
 var __export = (target, all) => {
+  __markAsModule(target);
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+var __reExport = (target, module2, desc) => {
+  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
+    for (let key of __getOwnPropNames(module2))
+      if (!__hasOwnProp.call(target, key) && key !== "default")
+        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
   }
-  return to;
+  return target;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __toModule = (module2) => {
+  return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
+};
 
 // src/main.ts
-var main_exports = {};
-__export(main_exports, {
+__export(exports, {
   default: () => StraightforwardObsidian2LatexPlugin
 });
-module.exports = __toCommonJS(main_exports);
-var import_obsidian4 = require("obsidian");
+var import_obsidian4 = __toModule(require("obsidian"));
 
 // src/converter/LatexConverter.ts
-var import_obsidian = require("obsidian");
+var import_obsidian = __toModule(require("obsidian"));
 
 // src/converter/processors/MarkdownProcessor.ts
 var MarkdownProcessor = class {
@@ -48,9 +42,6 @@ var MarkdownProcessor = class {
     this.app = app;
     this.settings = settings;
   }
-  /**
-   * Traite les lignes markdown et les convertit en LaTeX
-   */
   async process(lines) {
     let processedLines = [...lines];
     processedLines = this.processHeaders(processedLines);
@@ -61,9 +52,6 @@ var MarkdownProcessor = class {
     processedLines = this.processSpecialSymbols(processedLines);
     return processedLines;
   }
-  /**
-   * Traite les en-têtes markdown
-   */
   processHeaders(lines) {
     return lines.map((line) => {
       line = line.replace(/^# (.*)$/, "\\section{$1}");
@@ -78,9 +66,6 @@ var MarkdownProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les listes
-   */
   processLists(lines) {
     const processedLines = [];
     let inList = false;
@@ -121,9 +106,6 @@ var MarkdownProcessor = class {
     }
     return processedLines;
   }
-  /**
-   * Traite le formatage (gras, italique, etc.)
-   */
   processFormatting(lines) {
     return lines.map((line) => {
       line = line.replace(/\*\*(.*?)\*\*/g, "\\textbf{$1}");
@@ -135,9 +117,6 @@ var MarkdownProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les liens
-   */
   processLinks(lines) {
     return lines.map((line) => {
       line = line.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "\\href{$2}{$1}");
@@ -145,19 +124,16 @@ var MarkdownProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les commentaires
-   */
   processComments(lines) {
     return lines.filter((line) => {
       return !line.trim().startsWith("%%");
     });
   }
-  /**
-   * Traite les symboles spéciaux
-   */
   processSpecialSymbols(lines) {
     return lines.map((line) => {
+      if (line.trim().startsWith("\\")) {
+        return line;
+      }
       line = line.replace(/%/g, "\\%");
       line = line.replace(/#/g, "\\#");
       line = line.replace(/\$/g, "\\$");
@@ -165,7 +141,6 @@ var MarkdownProcessor = class {
       line = line.replace(/\}/g, "\\}");
       line = line.replace(/\^/g, "\\^{}");
       line = line.replace(/\~/g, "\\~{}");
-      line = line.replace(/\\/g, "\\textbackslash{}");
       line = line.replace(/&/g, "\\&");
       return line;
     });
@@ -178,9 +153,6 @@ var EquationProcessor = class {
     this.app = app;
     this.settings = settings;
   }
-  /**
-   * Traite les équations dans les lignes
-   */
   async process(lines) {
     let processedLines = [...lines];
     processedLines = this.processInlineEquations(processedLines);
@@ -189,18 +161,12 @@ var EquationProcessor = class {
     processedLines = this.processEquationReferences(processedLines);
     return processedLines;
   }
-  /**
-   * Traite les équations inline ($...$)
-   */
   processInlineEquations(lines) {
     return lines.map((line) => {
       line = line.replace(/\$([^$]+)\$/g, "\\($1\\)");
       return line;
     });
   }
-  /**
-   * Traite les équations en bloc ($$...$$)
-   */
   processBlockEquations(lines) {
     const processedLines = [];
     let inEquation = false;
@@ -237,29 +203,17 @@ var EquationProcessor = class {
     }
     return processedLines;
   }
-  /**
-   * Traite les équations alignées
-   */
   processAlignedEquations(lines) {
     return lines.map((line) => {
-      line = line.replace(
-        /\$\$\s*\\begin\{aligned\}(.*?)\\end\{aligned\}\s*\$\$/gs,
-        (match, content) => {
-          return this.convertAlignedToSplit(content);
-        }
-      );
-      line = line.replace(
-        /\$\$\s*\\begin\{align\}(.*?)\\end\{align\}\s*\$\$/gs,
-        (match, content) => {
-          return this.convertAlignToSplit(content);
-        }
-      );
+      line = line.replace(/\$\$\s*\\begin\{aligned\}(.*?)\\end\{aligned\}\s*\$\$/gs, (match, content) => {
+        return this.convertAlignedToSplit(content);
+      });
+      line = line.replace(/\$\$\s*\\begin\{align\}(.*?)\\end\{align\}\s*\$\$/gs, (match, content) => {
+        return this.convertAlignToSplit(content);
+      });
       return line;
     });
   }
-  /**
-   * Convertit une équation alignée en format split
-   */
   convertAlignedToSplit(content) {
     const lines = content.split("\\\\").map((line) => line.trim());
     const splitContent = lines.map((line) => `		${line}`).join(" \\\\\n");
@@ -269,9 +223,6 @@ ${splitContent}
 	\\end{split}
 \\end{equation}`;
   }
-  /**
-   * Convertit une équation align en format split
-   */
   convertAlignToSplit(content) {
     const lines = content.split("\\\\").map((line) => line.trim());
     const splitContent = lines.map((line) => `		${line}`).join(" \\\\\n");
@@ -281,9 +232,6 @@ ${splitContent}
 	\\end{split}
 \\end{equation}`;
   }
-  /**
-   * Traite les références d'équations
-   */
   processEquationReferences(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[eq__block_([^\]]+)\]\]/g, "\\eqref{eq:$1}");
@@ -291,9 +239,6 @@ ${splitContent}
       return line;
     });
   }
-  /**
-   * Génère une équation LaTeX à partir du contenu
-   */
   generateLatexEquation(content, label) {
     content = content.trim();
     content = content.replace(/^\$\$|\$\$$/g, "").trim();
@@ -302,9 +247,6 @@ ${splitContent}
 	${content}
 \\end{equation}`;
   }
-  /**
-   * Convertit les équations non numérotées en numérotées
-   */
   convertNonNumberedToNumbered(lines) {
     return lines.map((line) => {
       const match = line.match(/\$\$\s*(.*?)\s*\$\$\s*\\label\{eq__block_([^}]+)\}/);
@@ -318,9 +260,6 @@ ${splitContent}
       return line;
     });
   }
-  /**
-   * Vérifie et corrige les équations alignées
-   */
   checkAndCorrectAlignedEquations(lines) {
     return lines.map((line) => {
       if (line.includes("\\begin{aligned}") || line.includes("\\begin{align}")) {
@@ -336,18 +275,12 @@ var TableProcessor = class {
     this.app = app;
     this.settings = settings;
   }
-  /**
-   * Traite les tableaux dans les lignes
-   */
   async process(lines) {
     let processedLines = [...lines];
     const tableIndexes = this.identifyTables(processedLines);
     processedLines = this.convertTables(processedLines, tableIndexes);
     return processedLines;
   }
-  /**
-   * Identifie les tableaux dans les lignes
-   */
   identifyTables(lines) {
     const tableIndexes = [];
     let tableStarted = false;
@@ -367,15 +300,9 @@ var TableProcessor = class {
     }
     return tableIndexes;
   }
-  /**
-   * Vérifie si une ligne fait partie d'un tableau
-   */
   isTableLine(line) {
     return line.includes("|") && line.trim().length > 0;
   }
-  /**
-   * Convertit les tableaux identifiés
-   */
   convertTables(lines, tableIndexes) {
     const processedLines = [];
     let tableIndex = 0;
@@ -396,9 +323,6 @@ var TableProcessor = class {
     }
     return processedLines;
   }
-  /**
-   * Convertit un tableau markdown en LaTeX
-   */
   convertTableToLatex(tableLines) {
     if (tableLines.length < 2) {
       return tableLines.join("\n");
@@ -408,7 +332,8 @@ var TableProcessor = class {
     let alignments = [];
     for (let i = 0; i < tableLines.length; i++) {
       const line = tableLines[i].trim();
-      if (line.length === 0) continue;
+      if (line.length === 0)
+        continue;
       const columns = line.split("|").map((col) => col.trim()).filter((col) => col.length > 0);
       if (i === 0) {
         headers = columns;
@@ -420,9 +345,6 @@ var TableProcessor = class {
     }
     return this.generateLatexTable(headers, alignments, rows);
   }
-  /**
-   * Parse les alignements depuis la ligne de séparateurs
-   */
   parseAlignments(alignmentLine) {
     return alignmentLine.map((col) => {
       col = col.trim();
@@ -437,9 +359,6 @@ var TableProcessor = class {
       }
     });
   }
-  /**
-   * Génère le tableau LaTeX
-   */
   generateLatexTable(headers, alignments, rows) {
     const packageType = this.settings.getTablePackage();
     const alignment = this.settings.getTableAlignment();
@@ -468,9 +387,6 @@ var TableProcessor = class {
       return this.generateStandardTable(columnSpec, headerRow, dataRows);
     }
   }
-  /**
-   * Génère un tableau avec tabularx
-   */
   generateTabularxTable(columnSpec, headerRow, dataRows, relWidth) {
     const width = relWidth > 0 ? `${relWidth}\\linewidth` : "\\linewidth";
     return `\\begin{table}[h]
@@ -486,9 +402,6 @@ ${dataRows.join(" \\\\\n")} \\\\
 \\label{tab:table_label}
 \\end{table}`;
   }
-  /**
-   * Génère un tableau avec longtable
-   */
   generateLongtableTable(columnSpec, headerRow, dataRows) {
     return `\\begin{longtable}{${columnSpec}}
 \\hline
@@ -507,9 +420,6 @@ ${dataRows.join(" \\\\\n")} \\\\
 \\label{tab:table_label}
 \\end{longtable}`;
   }
-  /**
-   * Génère un tableau standard
-   */
   generateStandardTable(columnSpec, headerRow, dataRows) {
     return `\\begin{table}[h]
 \\centering
@@ -524,9 +434,6 @@ ${dataRows.join(" \\\\\n")} \\\\
 \\label{tab:table_label}
 \\end{table}`;
   }
-  /**
-   * Échappe les caractères spéciaux LaTeX
-   */
   escapeLatex(text) {
     return text.replace(/\\/g, "\\textbackslash{}").replace(/\{/g, "\\{").replace(/\}/g, "\\}").replace(/\$/g, "\\$").replace(/\^/g, "\\^{}").replace(/\~/g, "\\~{}").replace(/\&/g, "\\&").replace(/%/g, "\\%").replace(/#/g, "\\#").replace(/_/g, "\\_");
   }
@@ -534,15 +441,14 @@ ${dataRows.join(" \\\\\n")} \\\\
 
 // src/converter/processors/ReferenceProcessor.ts
 var ReferenceProcessor = class {
-  constructor(app, settings) {
+  constructor(app, settings, pathManager) {
     this.app = app;
     this.settings = settings;
+    this.pathManager = pathManager;
   }
-  /**
-   * Traite les références dans les lignes
-   */
   async process(lines) {
     let processedLines = [...lines];
+    processedLines = await this.processDynamicReferences(processedLines);
     processedLines = this.processInternalLinks(processedLines);
     processedLines = this.processCitations(processedLines);
     if (this.settings.getConvertNonEmbeddedReferences()) {
@@ -552,9 +458,162 @@ var ReferenceProcessor = class {
     processedLines = this.processTableReferences(processedLines);
     return processedLines;
   }
-  /**
-   * Traite les liens internes [[note]]
-   */
+  async processDynamicReferences(lines) {
+    const processedLines = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const refMatch = line.match(/!ref\{([^}]+)\}/);
+      if (refMatch) {
+        const refName = refMatch[1];
+        console.log(`Traitement de la r\xE9f\xE9rence dynamique: ${refName}`);
+        const referencedFile = await this.findReferencedFile(refName);
+        if (referencedFile) {
+          try {
+            const content = await this.app.vault.read(referencedFile);
+            const contentLines = content.split("\n");
+            const latexContent = await this.convertReferencedContentToLatex(contentLines);
+            const newLine = line.replace(/!ref\{[^}]+\}/, latexContent.join("\n"));
+            processedLines.push(newLine);
+          } catch (error) {
+            console.error(`Erreur lors de la conversion de ${refName}:`, error);
+            processedLines.push(line);
+          }
+        } else {
+          console.warn(`Fichier r\xE9f\xE9renc\xE9 non trouv\xE9: ${refName}`);
+          processedLines.push(line);
+        }
+      } else {
+        processedLines.push(line);
+      }
+    }
+    return processedLines;
+  }
+  async findReferencedFile(refName) {
+    const files = this.app.vault.getMarkdownFiles();
+    let file = files.find((f) => f.basename === refName);
+    if (file)
+      return file;
+    file = files.find((f) => f.name === `${refName}.md`);
+    if (file)
+      return file;
+    const specialFolders = ["table blocks", "figure blocks", "equation blocks"];
+    for (const folder of specialFolders) {
+      file = files.find((f) => f.path.includes(folder) && f.basename === refName);
+      if (file)
+        return file;
+    }
+    file = files.find((f) => f.path.includes(refName));
+    return file || null;
+  }
+  async convertReferencedContentToLatex(contentLines) {
+    const isTable = contentLines.some((line) => line.includes("|") || line.includes("---"));
+    const isFigure = contentLines.some((line) => line.includes("![") || line.includes("figure"));
+    const isEquation = contentLines.some((line) => line.includes("$$") || line.includes("$"));
+    let processedLines = [...contentLines];
+    if (isTable) {
+      processedLines = this.processTableContent(processedLines);
+    } else if (isFigure) {
+      processedLines = this.processFigureContent(processedLines);
+    } else if (isEquation) {
+      processedLines = this.processEquationContent(processedLines);
+    } else {
+      processedLines = this.processGeneralContent(processedLines);
+    }
+    return processedLines;
+  }
+  processTableContent(lines) {
+    const processedLines = [];
+    let inTable = false;
+    let tableContent = [];
+    for (const line of lines) {
+      if (line.includes("|") && line.includes("---")) {
+        if (!inTable) {
+          inTable = true;
+          tableContent = [];
+        }
+        tableContent.push(line);
+      } else if (inTable && line.trim() === "") {
+        inTable = false;
+        const latexTable = this.convertTableToLatex(tableContent);
+        processedLines.push(...latexTable);
+        tableContent = [];
+      } else if (inTable) {
+        tableContent.push(line);
+      } else {
+        processedLines.push(line);
+      }
+    }
+    if (inTable && tableContent.length > 0) {
+      const latexTable = this.convertTableToLatex(tableContent);
+      processedLines.push(...latexTable);
+    }
+    return processedLines;
+  }
+  convertTableToLatex(tableLines) {
+    if (tableLines.length < 2)
+      return tableLines;
+    const latexLines = [];
+    latexLines.push("\\begin{table}[ht]");
+    latexLines.push("\\centering");
+    latexLines.push("\\caption{Caption du tableau}");
+    latexLines.push("\\label{tab:table}");
+    const firstRow = tableLines[0];
+    const columns = (firstRow.match(/\|/g) || []).length - 1;
+    const columnSpec = "c".repeat(columns);
+    latexLines.push(`\\begin{tabular}{${columnSpec}}`);
+    latexLines.push("\\hline");
+    for (let i = 0; i < tableLines.length; i++) {
+      const line = tableLines[i];
+      if (line.includes("---"))
+        continue;
+      const cells = line.split("|").filter((cell) => cell.trim() !== "");
+      const latexRow = cells.map((cell) => cell.trim()).join(" & ");
+      latexLines.push(latexRow + " \\\\");
+      if (i < tableLines.length - 1) {
+        latexLines.push("\\hline");
+      }
+    }
+    latexLines.push("\\end{tabular}");
+    latexLines.push("\\end{table}");
+    return latexLines;
+  }
+  processFigureContent(lines) {
+    return lines.map((line) => {
+      line = line.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+        return `\\begin{figure}[htb]
+\\centering
+\\includegraphics[width=0.7\\linewidth]{${src}}
+\\caption{${alt || "Caption"}}
+\\label{fig:figure}
+\\end{figure}`;
+      });
+      return line;
+    });
+  }
+  processEquationContent(lines) {
+    return lines.map((line) => {
+      line = line.replace(/\$([^$]+)\$/g, "\\($1\\)");
+      line = line.replace(/\$\$([^$]+)\$\$/g, (match, equation) => {
+        return `\\begin{equation}
+\\label{eq:equation}
+${equation}
+\\end{equation}`;
+      });
+      return line;
+    });
+  }
+  processGeneralContent(lines) {
+    return lines.map((line) => {
+      line = line.replace(/^# (.*)$/, "\\section{$1}");
+      line = line.replace(/^## (.*)$/, "\\subsection{$1}");
+      line = line.replace(/^### (.*)$/, "\\subsubsection{$1}");
+      line = line.replace(/\*\*(.*?)\*\*/g, "\\textbf{$1}");
+      line = line.replace(/\*(.*?)\*/g, "\\textit{$1}");
+      line = line.replace(/==(.*?)==/g, "\\hl{$1}");
+      line = line.replace(/^[\s]*[-*+]\s/, "\\item ");
+      return line;
+    });
+  }
   processInternalLinks(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[([^\]]+)\]\]/g, (match, noteName) => {
@@ -571,9 +630,6 @@ var ReferenceProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les citations [[p1]], [[p2]], etc.
-   */
   processCitations(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[p(\d+)\]\]/g, "\\cite{p$1}");
@@ -581,18 +637,12 @@ var ReferenceProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les références non-embarquées
-   */
   processNonEmbeddedReferences(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[([^\]]+)\]\]/g, "$1");
       return line;
     });
   }
-  /**
-   * Traite les références de figures
-   */
   processFigureReferences(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[figure__block_([^\]]+)\]\]/g, "\\ref{fig:$1}");
@@ -600,9 +650,6 @@ var ReferenceProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les références de tableaux
-   */
   processTableReferences(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[table__block_([^\]]+)\]\]/g, "\\ref{tab:$1}");
@@ -610,37 +657,28 @@ var ReferenceProcessor = class {
       return line;
     });
   }
-  /**
-   * Vérifie si une référence est une citation
-   */
   isCitation(noteName) {
     const citationPattern = /^(p|ref)\d+$/;
     return citationPattern.test(noteName);
   }
-  /**
-   * Normalise un label pour LaTeX
-   */
   normalizeLabel(label) {
     return label.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
   }
-  /**
-   * Trouve une note par son nom
-   */
   async findNoteByName(noteName) {
     const files = this.app.vault.getMarkdownFiles();
     let file = files.find((f) => f.basename === noteName);
-    if (file) return file;
+    if (file)
+      return file;
     file = files.find((f) => f.name === `${noteName}.md`);
-    if (file) return file;
+    if (file)
+      return file;
     file = files.find((f) => f.path.includes(noteName));
     return file || null;
   }
-  /**
-   * Obtient le contenu d'une note
-   */
   async getNoteContent(noteName) {
     const file = await this.findNoteByName(noteName);
-    if (!file) return null;
+    if (!file)
+      return null;
     try {
       return await this.app.vault.read(file);
     } catch (error) {
@@ -648,9 +686,6 @@ var ReferenceProcessor = class {
       return null;
     }
   }
-  /**
-   * Traite les références avec numéros de section
-   */
   processSectionReferences(lines) {
     if (!this.settings.getAddSectionNumberAfterReferencing()) {
       return lines;
@@ -662,9 +697,6 @@ var ReferenceProcessor = class {
       return line;
     });
   }
-  /**
-   * Traite les références croisées entre sections
-   */
   processCrossReferences(lines) {
     return lines.map((line) => {
       line = line.replace(/\[\[([^#]+)#([^\]]+)\]\]/g, (match, section, subsection) => {
@@ -684,9 +716,6 @@ var LatexGenerator = class {
     this.settings = settings;
     this.pathManager = pathManager;
   }
-  /**
-   * Génère le contenu LaTeX complet
-   */
   async generate(lines, file) {
     const preamble = this.generatePreamble();
     const documentStart = this.generateDocumentStart();
@@ -694,9 +723,6 @@ var LatexGenerator = class {
     const documentEnd = this.generateDocumentEnd();
     return preamble + "\n\n" + documentStart + "\n\n" + mainContent + "\n\n" + documentEnd;
   }
-  /**
-   * Génère le préambule LaTeX
-   */
   generatePreamble() {
     const documentClass = this.settings.getDocumentClass();
     const fontSize = this.settings.getFontSize();
@@ -741,9 +767,6 @@ var LatexGenerator = class {
     }
     return preamble;
   }
-  /**
-   * Génère le début du document
-   */
   generateDocumentStart() {
     let start = "\\begin{document}";
     if (this.settings.getAllowDisplayBreaks()) {
@@ -762,9 +785,6 @@ var LatexGenerator = class {
     }
     return start;
   }
-  /**
-   * Traite le contenu principal
-   */
   processMainContent(lines) {
     let textBeforeFirstSection = "";
     let mainContent = "";
@@ -785,9 +805,6 @@ var LatexGenerator = class {
     }
     return mainContent;
   }
-  /**
-   * Génère la fin du document
-   */
   generateDocumentEnd() {
     let end = "";
     if (this.settings.getAddNewPageBeforeBibliography()) {
@@ -798,9 +815,6 @@ var LatexGenerator = class {
     end += "\n\\end{document}";
     return end;
   }
-  /**
-   * Génère les packages à charger selon les paramètres
-   */
   generatePackages() {
     const packages = [];
     packages.push("\\usepackage[table]{xcolor}");
@@ -817,9 +831,6 @@ var LatexGenerator = class {
     packages.push("\\usepackage{cleveref}");
     return packages.join("\n");
   }
-  /**
-   * Génère la configuration des hyperliens
-   */
   generateHyperlinkSetup() {
     return `\\hypersetup{
 	colorlinks = true,
@@ -828,9 +839,6 @@ var LatexGenerator = class {
 	citecolor = blue
 }`;
   }
-  /**
-   * Génère la configuration des marges
-   */
   generateMarginSetup() {
     const margin = this.settings.getMargin();
     if (margin) {
@@ -838,12 +846,14 @@ var LatexGenerator = class {
     }
     return "";
   }
-  /**
-   * Génère la configuration des paragraphes
-   */
   generateParagraphSetup() {
     const indent = this.settings.getParagraphIndent();
     return `\\setlength{\\parindent}{${indent}pt}`;
+  }
+  getTexFilePath(file) {
+    const baseName = this.pathManager.getBasename(file.path);
+    const writingPath = this.pathManager.getWritingPath();
+    return this.pathManager.joinPaths(writingPath, `${baseName}.tex`);
   }
 };
 
@@ -856,12 +866,9 @@ var LatexConverter = class {
     this.markdownProcessor = new MarkdownProcessor(this.app, this.settings);
     this.equationProcessor = new EquationProcessor(this.app, this.settings);
     this.tableProcessor = new TableProcessor(this.app, this.settings);
-    this.referenceProcessor = new ReferenceProcessor(this.app, this.settings);
+    this.referenceProcessor = new ReferenceProcessor(this.app, this.settings, this.pathManager);
     this.latexGenerator = new LatexGenerator(this.app, this.settings, this.pathManager);
   }
-  /**
-   * Convertit une note en LaTeX
-   */
   async convertNoteToLatex(file) {
     try {
       new import_obsidian.Notice("D\xE9but de la conversion en LaTeX...");
@@ -883,15 +890,9 @@ var LatexConverter = class {
       new import_obsidian.Notice(`Erreur lors de la conversion: ${error.message}`);
     }
   }
-  /**
-   * Affiche une modale pour sélectionner une note à convertir
-   */
   async showNoteSelectionModal() {
     new NoteSelectionModal(this.app, this).open();
   }
-  /**
-   * Compile le LaTeX en PDF
-   */
   async compileLatexToPdf(texFilePath) {
     try {
       new import_obsidian.Notice("Compilation LaTeX en cours...");
@@ -914,9 +915,6 @@ var LatexConverter = class {
       new import_obsidian.Notice(`Erreur lors de la compilation: ${error.message}`);
     }
   }
-  /**
-   * Lance un test complet du système
-   */
   async runCompleteTest() {
     try {
       new import_obsidian.Notice("Lancement du test complet...");
@@ -932,25 +930,16 @@ var LatexConverter = class {
       new import_obsidian.Notice(`Erreur lors du test complet: ${error.message}`);
     }
   }
-  /**
-   * Obtient le chemin du fichier .tex correspondant
-   */
   getTexFilePath(file) {
     const baseName = this.pathManager.getBasename(file.path);
     const writingPath = this.pathManager.getWritingPath();
     return this.pathManager.joinPaths(writingPath, `${baseName}.tex`);
   }
-  /**
-   * Sauvegarde le fichier .tex
-   */
   async saveTexFile(filePath, content) {
     const dir = this.pathManager.getDirectory(filePath);
     await this.pathManager.ensureDirectory(dir);
     await this.app.vault.adapter.write(filePath, content);
   }
-  /**
-   * Trouve les fichiers .tex dans un répertoire
-   */
   async findTexFiles(dirPath) {
     try {
       const files = await this.app.vault.adapter.list(dirPath);
@@ -962,16 +951,10 @@ var LatexConverter = class {
       return [];
     }
   }
-  /**
-   * Compile un fichier LaTeX
-   */
   async compileLatex(texFilePath) {
     console.log(`Compilation de ${texFilePath}`);
     return { success: true };
   }
-  /**
-   * Test des chemins
-   */
   async testPaths() {
     const paths = [
       this.pathManager.getWritingPath(),
@@ -984,14 +967,9 @@ var LatexConverter = class {
       await this.pathManager.ensureDirectory(path2);
     }
   }
-  /**
-   * Trouve un fichier de test
-   */
   async findTestFile() {
     const files = this.app.vault.getMarkdownFiles();
-    const testFiles = files.filter(
-      (file) => file.path.includes("\u270DWriting") && !file.path.includes("\u{1F468}\u200D\u{1F4BB}")
-    );
+    const testFiles = files.filter((file) => file.path.includes("\u270DWriting") && !file.path.includes("\u{1F468}\u200D\u{1F4BB}"));
     return testFiles.length > 0 ? testFiles[0] : null;
   }
 };
@@ -1002,9 +980,7 @@ var NoteSelectionModal = class extends import_obsidian.SuggestModal {
   }
   getSuggestions(query) {
     const files = this.app.vault.getMarkdownFiles();
-    return files.filter(
-      (file) => file.path.toLowerCase().includes(query.toLowerCase()) && file.path.includes("\u270DWriting")
-    );
+    return files.filter((file) => file.path.toLowerCase().includes(query.toLowerCase()) && file.path.includes("\u270DWriting"));
   }
   renderSuggestion(file, el) {
     el.createEl("div", { text: file.basename });
@@ -1016,8 +992,26 @@ var NoteSelectionModal = class extends import_obsidian.SuggestModal {
 };
 
 // src/utils/PathManager.ts
-var import_obsidian2 = require("obsidian");
-var path = __toESM(require("path"));
+var import_obsidian2 = __toModule(require("obsidian"));
+var path = {
+  normalize: (p) => p.replace(/\\/g, "/").replace(/\/+/g, "/"),
+  join: (...paths) => paths.join("/").replace(/\/+/g, "/"),
+  dirname: (p) => p.split("/").slice(0, -1).join("/") || ".",
+  basename: (p, ext) => {
+    const name = p.split("/").pop() || "";
+    return ext ? name.replace(new RegExp(ext + "$"), "") : name;
+  },
+  resolve: (...paths) => {
+    const joined = paths.join("/");
+    return joined.startsWith("/") ? joined : "/" + joined;
+  },
+  isAbsolute: (p) => p.startsWith("/"),
+  extname: (p) => {
+    const match = p.match(/\.[^\/]*$/);
+    return match ? match[0] : "";
+  },
+  sep: "/"
+};
 var PathManager = class {
   constructor(app) {
     this.app = app;
@@ -1027,87 +1021,45 @@ var PathManager = class {
       throw new Error("L'adapter du vault n'est pas FileSystemAdapter, impossible de r\xE9cup\xE9rer le chemin absolu du vault.");
     }
   }
-  /**
-   * Normalise un chemin pour être compatible cross-platform
-   */
   normalizePath(inputPath) {
     return path.normalize(inputPath);
   }
-  /**
-   * Joint des chemins de manière cross-platform
-   */
   joinPaths(...paths) {
     return path.join(...paths);
   }
-  /**
-   * Obtient le chemin absolu du vault
-   */
   getVaultPath() {
     return this.vaultPath;
   }
-  /**
-   * Obtient le chemin absolu d'un fichier
-   */
   getAbsolutePath(relativePath) {
     return path.resolve(this.vaultPath, relativePath);
   }
-  /**
-   * Vérifie si un chemin est absolu
-   */
   isAbsolutePath(inputPath) {
     return path.isAbsolute(inputPath);
   }
-  /**
-   * Obtient le répertoire d'un fichier
-   */
   getDirectory(filePath) {
     return path.dirname(filePath);
   }
-  /**
-   * Obtient le nom de fichier sans extension
-   */
   getBasename(filePath) {
     return path.basename(filePath, path.extname(filePath));
   }
-  /**
-   * Obtient l'extension d'un fichier
-   */
   getExtension(filePath) {
     return path.extname(filePath);
   }
-  /**
-   * Construit le chemin vers le dossier Writing
-   */
   getWritingPath() {
     return this.joinPaths(this.vaultPath, "\u270DWriting");
   }
-  /**
-   * Construit le chemin vers le dossier Automations
-   */
   getAutomationsPath() {
     return this.joinPaths(this.vaultPath, "\u{1F468}\u200D\u{1F4BB}Automations");
   }
-  /**
-   * Construit le chemin vers le dossier Literature
-   */
   getLiteraturePath() {
     return this.joinPaths(this.vaultPath, "\u{1F4DA}Literature");
   }
-  /**
-   * Construit le chemin vers les blocs d'équations
-   */
   getEquationBlocksPath() {
     return this.joinPaths(this.getWritingPath(), "equation blocks");
   }
-  /**
-   * Construit le chemin vers les blocs de tableaux
-   */
   getTableBlocksPath() {
     return this.joinPaths(this.getWritingPath(), "table blocks");
   }
-  /**
-   * Obtient le chemin d'un fichier TFile
-   */
   getFilePath(file) {
     if (this.app.vault.adapter instanceof import_obsidian2.FileSystemAdapter) {
       return this.app.vault.adapter.getFullPath(file.path);
@@ -1115,9 +1067,6 @@ var PathManager = class {
       throw new Error("L'adapter du vault n'est pas FileSystemAdapter, impossible de r\xE9cup\xE9rer le chemin absolu du fichier.");
     }
   }
-  /**
-   * Vérifie si un fichier existe
-   */
   async fileExists(filePath) {
     try {
       await this.app.vault.adapter.stat(filePath);
@@ -1126,9 +1075,6 @@ var PathManager = class {
       return false;
     }
   }
-  /**
-   * Crée un répertoire s'il n'existe pas
-   */
   async ensureDirectory(dirPath) {
     try {
       await this.app.vault.adapter.mkdir(dirPath);
@@ -1136,21 +1082,12 @@ var PathManager = class {
       console.log(`R\xE9pertoire ${dirPath} existe d\xE9j\xE0 ou erreur:`, error);
     }
   }
-  /**
-   * Obtient le séparateur de chemin pour la plateforme
-   */
   getPathSeparator() {
     return path.sep;
   }
-  /**
-   * Convertit un chemin Windows en format Unix si nécessaire
-   */
   toUnixPath(inputPath) {
     return inputPath.replace(/\\/g, "/");
   }
-  /**
-   * Convertit un chemin Unix en format Windows si nécessaire
-   */
   toWindowsPath(inputPath) {
     return inputPath.replace(/\//g, "\\");
   }
@@ -1158,35 +1095,27 @@ var PathManager = class {
 
 // src/settings/SettingsManager.ts
 var DEFAULT_SETTINGS = {
-  // Paramètres de base
   documentClass: "extarticle",
   fontSize: "",
   author: "Auteur",
   title: "",
   margin: "0.9in",
-  // Paramètres de paragraphe
   paragraphIndent: 0,
   addTableOfContents: true,
   addNewPageBeforeBibliography: true,
   allowDisplayBreaks: true,
-  // Paramètres de figures
   reduceSpacingBetweenFigures: false,
   putFigureBelowText: true,
   includePath: true,
-  // Paramètres de références
   convertNonEmbeddedReferences: true,
   treatEquationBlocksSeparately: true,
   adaptSectionHierarchy: true,
-  // Paramètres de liens internes
   addSectionNumberAfterReferencing: true,
-  // Paramètres de tableaux
   tablePackage: "tabularx",
   tableAlignment: "center",
   tableRelWidth: 1.2,
-  // Paramètres de compilation
   latexCompiler: "pdflatex",
   autoCompile: true,
-  // Chemins (seront définis dynamiquement)
   writingPath: "",
   automationsPath: "",
   literaturePath: "",
@@ -1209,7 +1138,6 @@ var SettingsManager = class {
   updateSettings(newSettings) {
     this.settings = { ...this.settings, ...newSettings };
   }
-  // Getters pour les paramètres spécifiques
   getDocumentClass() {
     return this.settings.documentClass;
   }
@@ -1273,7 +1201,6 @@ var SettingsManager = class {
   getAutoCompile() {
     return this.settings.autoCompile;
   }
-  // Méthodes pour mettre à jour les chemins
   setWritingPath(path2) {
     this.settings.writingPath = path2;
   }
@@ -1292,7 +1219,7 @@ var SettingsManager = class {
 };
 
 // src/settings/LatexSettingsTab.ts
-var import_obsidian3 = require("obsidian");
+var import_obsidian3 = __toModule(require("obsidian"));
 var LatexSettingsTab = class extends import_obsidian3.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);

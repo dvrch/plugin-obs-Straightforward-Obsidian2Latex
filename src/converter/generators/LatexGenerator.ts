@@ -241,4 +241,14 @@ export class LatexGenerator {
 		const indent = this.settings.getParagraphIndent();
 		return `\\setlength{\\parindent}{${indent}pt}`;
 	}
+
+	/**
+	 * Obtient le chemin du fichier .tex correspondant
+	 */
+	private getTexFilePath(file: TFile): string {
+		const baseName = this.pathManager.getBasename(file.path);
+		const writingPath = this.pathManager.getWritingPath();
+		// Utiliser le PathManager pour joindre les chemins correctement
+		return this.pathManager.joinPaths(writingPath, `${baseName}.tex`);
+	}
 } 

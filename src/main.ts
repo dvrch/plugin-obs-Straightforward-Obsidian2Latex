@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, MarkdownFileInfo } from 'obsidian';
+import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { LatexConverter } from './converter/LatexConverter';
 import { PathManager } from './utils/PathManager';
 import { SettingsManager } from './settings/SettingsManager';
@@ -36,7 +36,7 @@ export default class StraightforwardObsidian2LatexPlugin extends Plugin {
 		this.addCommand({
 			id: 'convert-current-note-to-latex',
 			name: 'Convertir la note actuelle en LaTeX',
-			editorCallback: async (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
+			editorCallback: async (editor: Editor, ctx: MarkdownView) => {
 				const file = ctx.file;
 				if (file) {
 					await this.converter.convertNoteToLatex(file);

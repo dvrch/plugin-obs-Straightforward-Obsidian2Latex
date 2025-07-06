@@ -1,5 +1,25 @@
 import { App, TFile, FileSystemAdapter } from 'obsidian';
-import * as path from 'path';
+
+// Remplacement de l'import path par une implémentation simple
+const path = {
+	normalize: (p: string) => p.replace(/\\/g, '/').replace(/\/+/g, '/'),
+	join: (...paths: string[]) => paths.join('/').replace(/\/+/g, '/'),
+	dirname: (p: string) => p.split('/').slice(0, -1).join('/') || '.',
+	basename: (p: string, ext?: string) => {
+		const name = p.split('/').pop() || '';
+		return ext ? name.replace(new RegExp(ext + '$'), '') : name;
+	},
+	resolve: (...paths: string[]) => {
+		const joined = paths.join('/');
+		return joined.startsWith('/') ? joined : '/' + joined;
+	},
+	isAbsolute: (p: string) => p.startsWith('/'),
+	extname: (p: string) => {
+		const match = p.match(/\.[^\/]*$/);
+		return match ? match[0] : '';
+	},
+	sep: '/'
+};
 
 export class PathManager {
 	private app: App;

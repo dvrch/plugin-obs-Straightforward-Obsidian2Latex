@@ -26,7 +26,7 @@ export class LatexConverter {
 		this.markdownProcessor = new MarkdownProcessor(this.app, this.settings);
 		this.equationProcessor = new EquationProcessor(this.app, this.settings);
 		this.tableProcessor = new TableProcessor(this.app, this.settings);
-		this.referenceProcessor = new ReferenceProcessor(this.app, this.settings);
+		this.referenceProcessor = new ReferenceProcessor(this.app, this.settings, this.pathManager);
 		this.latexGenerator = new LatexGenerator(this.app, this.settings, this.pathManager);
 	}
 
@@ -148,6 +148,7 @@ export class LatexConverter {
 	private getTexFilePath(file: TFile): string {
 		const baseName = this.pathManager.getBasename(file.path);
 		const writingPath = this.pathManager.getWritingPath();
+		// Utiliser le PathManager pour joindre les chemins correctement et éviter les doublons
 		return this.pathManager.joinPaths(writingPath, `${baseName}.tex`);
 	}
 
