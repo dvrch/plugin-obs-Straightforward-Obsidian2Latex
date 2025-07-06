@@ -1,4 +1,4 @@
-import { App, TFile } from 'obsidian';
+import { App, TFile, FileSystemAdapter } from 'obsidian';
 import * as path from 'path';
 
 export class PathManager {
@@ -7,7 +7,11 @@ export class PathManager {
 
 	constructor(app: App) {
 		this.app = app;
-		this.vaultPath = app.vault.adapter.getFullPath('');
+		if (app.vault.adapter instanceof FileSystemAdapter) {
+			this.vaultPath = app.vault.adapter.getBasePath();
+		} else {
+			throw new Error('L\'adapter du vault n\'est pas FileSystemAdapter, impossible de récupérer le chemin absolu du vault.');
+		}
 	}
 
 	/**
@@ -105,7 +109,11 @@ export class PathManager {
 	 * Obtient le chemin d'un fichier TFile
 	 */
 	getFilePath(file: TFile): string {
-		return this.app.vault.adapter.getFullPath(file.path);
+		if (this.app.vault.adapter instanceof FileSystemAdapter) {
+			return this.app.vault.adapter.getFullPath(file.path);
+		} else {
+			throw new Error('L\'adapter du vault n\'est pas FileSystemAdapter, impossible de récupérer le chemin absolu du fichier.');
+		}
 	}
 
 	/**

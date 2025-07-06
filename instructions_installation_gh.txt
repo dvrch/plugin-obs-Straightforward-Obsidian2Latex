@@ -1,0 +1,20 @@
+# Commandes pour installer et configurer la GitHub CLI (gh) sur Debian/Ubuntu
+
+# --- Étape 1 : Installation ---
+# Copiez et collez l'intégralité de ce bloc de commande dans votre terminal et exécutez-le.
+# Il ajoutera le dépôt de GitHub, mettra à jour vos paquets et installera l'outil `gh`.
+# Vous devrez peut-être entrer votre mot de passe administrateur (sudo).
+
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+&& sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+&& sudo apt update \
+&& sudo apt install gh -y
+
+# --- Étape 2 : Authentification ---
+# Une fois l'installation terminée, exécutez la commande suivante.
+# Elle lancera un processus interactif dans votre terminal pour vous connecter à votre compte GitHub.
+# Suivez simplement les instructions qui s'afficheront.
+
+gh auth login
+

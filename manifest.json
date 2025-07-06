@@ -1,6 +1,6 @@
 {
-  "id": "straightforward-obsidian2latex",
-  "name": "Straightforward Obsidian2Latex",
+  "id": "plugin-obs-Straightforward-Obsidian2Latex",
+  "name": "plugin-obs-Straightforward-Obsidian2Latex",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
   "description": "Plugin Obsidian pour convertir des notes en LaTeX de manière robuste et cross-platform",

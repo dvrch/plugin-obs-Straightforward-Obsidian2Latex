@@ -77,8 +77,15 @@ export default class StraightforwardObsidian2LatexPlugin extends Plugin {
 			id: 'open-latex-settings',
 			name: 'Ouvrir les paramètres LaTeX',
 			callback: () => {
-				// Ouvrir les paramètres via l'API Obsidian
-				this.app.setting.open();
+				// Ouvre le panneau de paramètres du plugin si possible
+				// @ts-ignore
+				if (this.app.setting && typeof this.app.setting.openTabById === 'function') {
+					// @ts-ignore
+					this.app.setting.openTabById(this.manifest.id);
+				} else {
+					// Fallback : afficher un message ou ne rien faire
+					console.warn('Impossible d\'ouvrir le panneau de paramètres automatiquement sur cette version d\'Obsidian.');
+				}
 			}
 		});
 	}
