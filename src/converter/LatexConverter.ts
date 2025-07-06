@@ -6,6 +6,7 @@ import { EquationProcessor } from './processors/EquationProcessor';
 import { TableProcessor } from './processors/TableProcessor';
 import { ReferenceProcessor } from './processors/ReferenceProcessor';
 import { LatexGenerator } from './generators/LatexGenerator';
+import { EmbeddedFileProcessor } from './EmbeddedFileProcessor';
 
 export class LatexConverter {
 	private app: App;
@@ -16,6 +17,7 @@ export class LatexConverter {
 	private tableProcessor: TableProcessor;
 	private referenceProcessor: ReferenceProcessor;
 	private latexGenerator: LatexGenerator;
+	private embeddedProcessor: EmbeddedFileProcessor;
 
 	constructor(app: App, settings: SettingsManager, pathManager: PathManager) {
 		this.app = app;
@@ -28,6 +30,7 @@ export class LatexConverter {
 		this.tableProcessor = new TableProcessor(this.app, this.settings);
 		this.referenceProcessor = new ReferenceProcessor(this.app, this.settings, this.pathManager);
 		this.latexGenerator = new LatexGenerator(this.app, this.settings, this.pathManager);
+		this.embeddedProcessor = new EmbeddedFileProcessor(this.app);
 	}
 
 	/**
@@ -53,16 +56,21 @@ export class LatexConverter {
 			// 5. Traitement des références
 			processedLines = await this.referenceProcessor.process(processedLines);
 
-			// 6. Génération du LaTeX
+			// 6. Traitement des fichiers imbriqués
+			const processedContent = processedLines.join('\n');
+			const embeddedProcessedContent = await this.embeddedProcessor.processEmbeddedReferences(processedContent);
+			processedLines = embeddedProcessedContent.split('\n');
+
+			// 7. Génération du LaTeX
 			const latexContent = await this.latexGenerator.generate(processedLines, file);
 
-			// 7. Sauvegarde du fichier .tex
+			// 8. Sauvegarde du fichier .tex
 			const texFilePath = this.getTexFilePath(file);
 			await this.saveTexFile(texFilePath, latexContent);
 
 			new Notice(`Conversion réussie ! Fichier créé: ${texFilePath}`);
 
-			// 8. Compilation automatique si activée
+			// 9. Compilation automatique si activée
 			if (this.settings.getAutoCompile()) {
 				await this.compileLatexToPdf(texFilePath);
 			}

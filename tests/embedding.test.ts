@@ -16,43 +16,70 @@ describe('Traitement des fichiers imbriqués', () => {
   it('devrait construire le chemin complet vers un bloc d\'équation', () => {
     const fileName = 'eq__block_Einstein';
     const expectedPath = `✍Writing/equation blocks/${fileName}.md`;
-    expect(expectedPath).toContain('equation blocks');
-    expect(expectedPath).toContain('eq__block_Einstein.md');
+    expect(expectedPath).toBe('✍Writing/equation blocks/eq__block_Einstein.md');
   });
 
-  it('devrait construire le chemin complet vers un bloc de tableau', () => {
-    const fileName = 'table__block_1';
-    const expectedPath = `✍Writing/table blocks/${fileName}.md`;
-    expect(expectedPath).toContain('table blocks');
-    expect(expectedPath).toContain('table__block_1.md');
+  it('devrait détecter les références aux blocs d\'équations dans le texte', () => {
+    const markdownContent = 'Voici une équation ![[eq__block_Einstein#expr]] et une autre ![[eq__block_1#expr]]';
+    const references = markdownContent.match(/!\[\[([^\]]+)\]\]/g);
+    expect(references).toHaveLength(2);
+    expect(references?.[0]).toBe('![[eq__block_Einstein#expr]]');
+    expect(references?.[1]).toBe('![[eq__block_1#expr]]');
   });
 
-  it('devrait détecter les références multiples dans un contenu', () => {
-    const content = `
-      ![[eq__block_Einstein#expr]]
-      ![[table__block_1#table]]
-      ![[table__block_2#table]]
+  it('devrait détecter les références aux blocs de tableaux dans le texte', () => {
+    const markdownContent = 'Voir le tableau ![[table__block_1#table]] et ![[table__block_2#table]]';
+    const references = markdownContent.match(/!\[\[([^\]]+)\]\]/g);
+    expect(references).toHaveLength(2);
+    expect(references?.[0]).toBe('![[table__block_1#table]]');
+    expect(references?.[1]).toBe('![[table__block_2#table]]');
+  });
+
+  it('devrait détecter les références aux blocs de figures dans le texte', () => {
+    const markdownContent = 'Voir la figure ![[figure__block_gradient_steps#fig]]';
+    const references = markdownContent.match(/!\[\[([^\]]+)\]\]/g);
+    expect(references).toHaveLength(1);
+    expect(references?.[0]).toBe('![[figure__block_gradient_steps#fig]]');
+  });
+
+  it('devrait remplacer une référence par le contenu LaTeX réel', () => {
+    // Simulation du contenu d'un fichier d'équation
+    const equationContent = `#expr
+\\begin{equation} \\label{eq:Einstein}
+\tE=mc^{2}
+\\end{equation}`;
+    
+    // Simulation de l'extraction de la section - approche simplifiée
+    const lines = equationContent.split('\n');
+    const exprIndex = lines.findIndex(line => line.trim() === '#expr');
+    const extractedContent = lines.slice(exprIndex + 1).join('\n');
+    
+    // Le contenu extrait devrait contenir l'équation LaTeX
+    expect(extractedContent).toContain('\\begin{equation}');
+    expect(extractedContent).toContain('E=mc^{2}');
+    expect(extractedContent).toContain('\\end{equation}');
+  });
+
+  it('devrait traiter les références avec des caractères spéciaux', () => {
+    const reference = '![[eq__block_Einstein\\texttt{expr}]]';
+    const fileName = reference.match(/\[\[([^\\#]+)/)?.[1];
+    const section = reference.match(/\\texttt\{([^}]+)\}/)?.[1];
+    
+    expect(fileName).toBe('eq__block_Einstein');
+    expect(section).toBe('expr');
+  });
+
+  it('devrait gérer les références multiples dans un même document', () => {
+    const markdownContent = `
+    Voici une équation ![[eq__block_Einstein#expr]]
+    Et un tableau ![[table__block_1#table]]
+    Et une figure ![[figure__block_1#fig]]
     `;
-    const references = content.match(/!\[\[([^\]]+)\]\]/g);
+    
+    const references = markdownContent.match(/!\[\[([^\]]+)\]\]/g);
     expect(references).toHaveLength(3);
-  });
-
-  it('devrait valider le format des blocs d\'équations', () => {
-    const equationBlock = `# %%expr%%
-$$E=mc^{2}$$`;
-    expect(equationBlock).toContain('# %%expr%%');
-    expect(equationBlock).toContain('$$');
-  });
-
-  it('devrait valider le format des blocs de tableaux', () => {
-    const tableBlock = `%%
-caption:: Caption of table
-%%
-# %%table%%
-| Col1 | Col2 |
-|------|------|
-| a11  | a12  |`;
-    expect(tableBlock).toContain('# %%table%%');
-    expect(tableBlock).toContain('caption::');
+    
+    const fileNames = references?.map(ref => ref.match(/\[\[([^#\\]+)/)?.[1]).filter(Boolean);
+    expect(fileNames).toEqual(['eq__block_Einstein', 'table__block_1', 'figure__block_1']);
   });
 }); 

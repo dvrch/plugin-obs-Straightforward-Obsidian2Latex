@@ -5,6 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    setupFiles: ['tests/setup.ts'],
   },
   resolve: {
     alias: {
@@ -13,5 +14,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['obsidian']
+  },
+  define: {
+    'process.env.NODE_ENV': '"test"'
   }
 }); 
