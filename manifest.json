@@ -1,0 +1,13 @@
+{
+  "id": "straightforward-obsidian2latex",
+  "name": "Straightforward Obsidian2Latex",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Plugin Obsidian pour convertir des notes en LaTeX de manière robuste et cross-platform",
+  "author": "dvrch",
+  "authorUrl": "https://github.com/dvrch",
+  "isDesktopOnly": false,
+  "dependencies": {
+    "svelte": "^4.0.0"
+  }
+} 
